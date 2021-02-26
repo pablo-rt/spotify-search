@@ -9,7 +9,7 @@ const Song = ({song}) => {
     return (
          <div className='col-12 col-sm-6 col-md-4 col-lg-3 mb-4'>
              <div className='card'>
-                 <img src={img} className='card-img-top'/>
+                 <img src={img} className='card-img-top' alt='unavailable'/>
              </div>
              <div className='card-body'> 
              <a className='card-txt text-success' href={song_link}> {name} </a>
