@@ -3,6 +3,7 @@ import axios from "axios";
 import Form from "./Components/Form";
 import Songlist from "./Components/Songlist";
 import Login from "./Components/Login";
+import Error from "./Components/Error";
 
 function App() {
   //App state
@@ -11,9 +12,10 @@ function App() {
   const [songs, saveSongs] = useState([]);
   const [currentPage, saveCurrentPage] = useState(1);
   const [maxPagees, saveMaxPages] = useState(1);
-  const [userToken, saveUserToken] = useState();
-
-  // store users spotify token
+  const [userToken, saveUserToken] = useState('');
+  const [noResult, setNoResult] = useState(null)
+ 
+  //store users spotify token
   useEffect(() => {
     const hash = window.location.hash
       .substring(1)
@@ -59,8 +61,16 @@ function App() {
     const result = await response.data;
     // store the maximim number of pages that I might need
     const pages_calc = Math.ceil(result.tracks.total / songsByPage);
+    // change noResult variable if no songs were retrived
     saveMaxPages(pages_calc);
     saveSongs(result.tracks.items);
+
+    if (result.tracks.total === 0){
+      setNoResult(true);  
+    }else{
+      setNoResult(null);
+    }
+    
   };
 
   useEffect(() => {
@@ -93,7 +103,11 @@ function App() {
                   saveCurrentPage={saveCurrentPage} />
           </div>
           <div className="row justify-content-center">
+            { noResult === null ?
             <Songlist songs={songs} />
+            :
+            ( <Error message="You've managed to get no songs out of that query"/>)
+            } 
           </div>
           {currentPage === 1 ? null : (
             <button
@@ -103,7 +117,7 @@ function App() {
               Previous
             </button>
           )}
-          {currentPage === maxPagees ? null : (
+          {currentPage === maxPagees || noResult===true ? null : (
             <button type="button" className="btn btn-success float-right" onClick={nextPage}>
               Next
             </button>
